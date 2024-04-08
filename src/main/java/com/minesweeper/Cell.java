@@ -1,27 +1,16 @@
 package com.minesweeper;
 
-public class Cell {
-    private boolean isMine;
-    private boolean isRevealed;
-    private boolean isFlagged;
-    private int adjacentMines; // Number of mines in adjacent cells
+public abstract class Cell {
+    protected boolean isRevealed = false;
+    protected boolean isFlagged = false;
 
-    public Cell() {
-        this.isMine = false;
-        this.isRevealed = false;
-        this.isFlagged = false;
-        this.adjacentMines = 0;
-    }
-    // Getter and setter for isMine
-    public boolean isMine() {
-        return isMine;
+    // Common method to flag a cell. Subclasses can use this directly if no special behavior is needed.
+    public void toggleFlag() {
+        if (!isRevealed) {
+            isFlagged = !isFlagged;
+        }
     }
 
-    public void setMine(boolean mine) {
-        isMine = mine;
-    }
-
-    // Getter and setter for isRevealed
     public boolean isRevealed() {
         return isRevealed;
     }
@@ -30,36 +19,15 @@ public class Cell {
         isRevealed = revealed;
     }
 
-    // Getter and setter for isFlagged
     public boolean isFlagged() {
         return isFlagged;
     }
 
-    public void setFlagged(boolean flagged) {
-        isFlagged = flagged;
-    }
 
-    // Getter and setter for adjacentMines
-    public int getAdjacentMines() {
-        return adjacentMines;
-    }
-
-    public void setAdjacentMines(int adjacentMines) {
-        this.adjacentMines = adjacentMines;
-    }
-
-    public boolean isEmpty() {
-        return !this.isMine && this.adjacentMines == 0;
-    }
-
-    // Method to display the cell's current state
-    public String toString() {
-        if (isRevealed) {
-            return isMine ? "*" : Integer.toString(adjacentMines);
-        } else if (isFlagged) {
-            return "F";
-        } else {
-            return "#";
-        }
-    }
+    public abstract String toString();
+    public abstract boolean isMine();
+    public abstract void setAdjacentMines(int adjacentMines);
 }
+
+
+

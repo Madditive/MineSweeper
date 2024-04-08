@@ -17,10 +17,11 @@ public class Board {
     }
 
     private void initializeBoard() {
-        // Initialize all cells
+        // Initially, fill the board with NotBombCells.
+        // The number of adjacent mines will be set later.
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                cells[i][j] = new Cell();
+                cells[i][j] = new NotBombCell(0); // Defaulting to no adjacent mines
             }
         }
     }
@@ -32,46 +33,34 @@ public class Board {
             int row = random.nextInt(height);
             int col = random.nextInt(width);
 
-            // Ensure first cell and already placed mines are avoided
-            if ((row != firstRow || col != firstCol) && !cells[row][col].isMine()) {
-                cells[row][col].setMine(true);
+            // Ensure the first cell and its adjacent cells do not contain mines
+            if ((row != firstRow || col != firstCol) && !(cells[row][col] instanceof BombCell)) {
+                // Replace a NotBombCell with a BombCell
+                cells[row][col] = new BombCell();
                 placedMines++;
-            }
-        }
-        calculateAdjacentMines();
-    }
-
-    private void calculateAdjacentMines() {
-        // Method to calculate and set the number of adjacent mines for each cell
-        for (int i = 0; i < height; i++) {
-            for (int j = 0; j < width; j++) {
-                if (!cells[i][j].isMine()) {
-                    int mineCount = countAdjacentMines(i, j);
-                    cells[i][j].setAdjacentMines(mineCount);
-                }
+                // Update adjacent mines count for surrounding cells
+                updateAdjacentCells(row, col);
             }
         }
     }
 
-    private int countAdjacentMines(int row, int col) {
-        // Helper method to count adjacent mines for a given cell
-        int count = 0;
-        for (int i = row - 1; i <= row + 1; i++) {
-            for (int j = col - 1; j <= col + 1; j++) {
-                if (i >= 0 && i < height && j >= 0 && j < width && cells[i][j].isMine()) {
-                    count++;
+    private void updateAdjacentCells(int bombRow, int bombCol) {
+        for (int i = Math.max(0, bombRow - 1); i <= Math.min(bombRow + 1, height - 1); i++) {
+            for (int j = Math.max(0, bombCol - 1); j <= Math.min(bombCol + 1, width - 1); j++) {
+                if (!(cells[i][j] instanceof BombCell)) {
+                    NotBombCell cell = (NotBombCell) cells[i][j];
+                    cell.setAdjacentMines(cell.getAdjacentMines() + 1);
                 }
             }
         }
-        return count;
     }
 
     public void revealCell(int row, int col) {
         // Method to reveal a cell at a specific location
         Cell cell = cells[row][col];
-        if (cell.isRevealed() && !cell.isFlagged()) {
+        if (!cell.isRevealed() && !cell.isFlagged()) {
             cell.setRevealed(true);
-            if (cell.isEmpty()) {
+            if (cell instanceof NotBombCell && ((NotBombCell) cell).getAdjacentMines() == 0) {
                 revealAdjacentCells(row, col);
             }
         }
@@ -89,24 +78,41 @@ public class Board {
         }
     }
 
-    public Cell getCell(int row, int col) {
-        return cells[row][col];
+    public void toggleFlagOnCell(int row, int col) {
+        cells[row][col].toggleFlag();
     }
 
     public void displayBoard() {
-        System.out.print("  "); // Initial spacing for row labels
+        // Print column labels (0-9 then A-Z for simplicity)
+        System.out.print("  "); // Initial spacing for alignment
         for (int j = 0; j < width; j++) {
             System.out.print(Integer.toString(j, 36).toUpperCase() + " "); // Convert to Base 36 and capitalize
         }
         System.out.println();
 
         for (int i = 0; i < height; i++) {
+            // Print row labels
             System.out.print(Integer.toString(i, 36).toUpperCase() + " "); // Convert to Base 36 and capitalize
-
             for (int j = 0; j < width; j++) {
                 System.out.print(cells[i][j].toString() + " ");
             }
             System.out.println(); // new Line at the end of each row
         }
+    }
+
+    public Cell getCell(int row, int col) {
+        return cells[row][col];
+    }
+
+    public int countRevealedCells() {
+        int revealedCells = 0;
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                if (cells[i][j].isRevealed()) {
+                    revealedCells++;
+                }
+            }
+        }
+        return revealedCells;
     }
 }
