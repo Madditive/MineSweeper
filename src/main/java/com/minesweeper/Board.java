@@ -3,10 +3,10 @@ package com.minesweeper;
 import java.util.Random;
 
 public class Board {
-    private Cell[][] cells;
-    private int width;
-    private int height;
-    private int mineCount;
+    private final Cell[][] cells;
+    private final int width;
+    private final int height;
+    private final int mineCount;
 
     public Board(int width, int height, int mineCount) {
         this.width = width;
@@ -17,11 +17,10 @@ public class Board {
     }
 
     private void initializeBoard() {
-        // Initially, fill the board with NotBombCells.
-        // The number of adjacent mines will be set later.
         for (int i = 0; i < height; i++) {
             for (int j = 0; j < width; j++) {
-                cells[i][j] = new NotBombCell(0); // Defaulting to no adjacent mines
+                // Initially, create all cells as NotBombCell with 0 adjacent mines
+                cells[i][j] = CellFactory.createCell(false, 0);
             }
         }
     }
@@ -29,27 +28,31 @@ public class Board {
     public void placeMinesSafely(int firstRow, int firstCol) {
         Random random = new Random();
         int placedMines = 0;
+
         while (placedMines < mineCount) {
             int row = random.nextInt(height);
             int col = random.nextInt(width);
 
-            // Ensure the first cell and its adjacent cells do not contain mines
-            if ((row != firstRow || col != firstCol) && !(cells[row][col] instanceof BombCell)) {
-                // Replace a NotBombCell with a BombCell
-                cells[row][col] = new BombCell();
-                placedMines++;
-                // Update adjacent mines count for surrounding cells
-                updateAdjacentCells(row, col);
+            // Ensure the first selected cell is not a mine and is not already a BombCell
+            if ((row == firstRow && col == firstCol) || cells[row][col].isMine()) {
+                continue;
             }
+
+            // Replace the current cell with a BombCell
+            cells[row][col] = CellFactory.createCell(true, 0);
+            placedMines++;
+
+            // Update adjacent cells' mine counts
+            updateAdjacentCells(row, col);
         }
     }
 
     private void updateAdjacentCells(int bombRow, int bombCol) {
-        for (int i = Math.max(0, bombRow - 1); i <= Math.min(bombRow + 1, height - 1); i++) {
-            for (int j = Math.max(0, bombCol - 1); j <= Math.min(bombCol + 1, width - 1); j++) {
-                if (!(cells[i][j] instanceof BombCell)) {
-                    NotBombCell cell = (NotBombCell) cells[i][j];
-                    cell.setAdjacentMines(cell.getAdjacentMines() + 1);
+        for (int row = Math.max(0, bombRow - 1); row <= Math.min(bombRow + 1, height - 1); row++) {
+            for (int col = Math.max(0, bombCol - 1); col <= Math.min(bombCol + 1, width - 1); col++) {
+                if (!(cells[row][col].isMine())) {
+                    int currentMines = cells[row][col] instanceof NotBombCell ? ((NotBombCell) cells[row][col]).getAdjacentMines() : 0;
+                    cells[row][col] = CellFactory.createCell(false, currentMines + 1);
                 }
             }
         }
