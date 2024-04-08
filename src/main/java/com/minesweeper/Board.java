@@ -21,9 +21,17 @@ public class Board {
     }
 
     public void displayBoard() {
+        System.out.print("  "); // Initial spacing for row labels
+        for (int j = 0; j < width; j++) {
+            System.out.print(Integer.toString(j, 36).toUpperCase() + " "); // Convert to Base 36 and capitalize
+        }
+        System.out.println();
+
         for (int i = 0; i < height; i++) {
+            System.out.print(Integer.toString(i, 36).toUpperCase() + " "); // Convert to Base 36 and capitalize
+
             for (int j = 0; j < width; j++) {
-                System.out.print("."); // Display each cell as a "." to represent an unrevealed cell
+                System.out.print("# "); // Display each cell as a "#" to represent an unrevealed cell with spacing
             }
             System.out.println(); // new Line at the end of each row
         }
