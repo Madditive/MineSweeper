@@ -6,15 +6,45 @@ public class Game {
     private final Board board;
     private final Scanner scanner = new Scanner(System.in);
     private boolean isGameOver = false;
-    private final int width;
-    private final int height;
-    private final int mineCount;
+    private int width;
+    private int height;
+    private int mineCount;
 
-    public Game(int width, int height, int mineCount) {
-        this.width = width;
-        this.height = height;
-        this.mineCount = mineCount;
+    public Game() {
+        selectDifficulty();
         this.board = new Board(width, height, mineCount);
+    }
+
+    private void selectDifficulty() {
+        System.out.println("Select difficulty:");
+        System.out.println("1: Easy (8x8 with 10 mines)");
+        System.out.println("2: Intermediate (16x16 with 40 mines)");
+        System.out.println("3: Expert (30x16 with 99 mines)");
+        String choice = scanner.nextLine().trim();
+
+        switch (choice) {
+            case "1":
+                width = 8;
+                height = 8;
+                mineCount = 10;
+                break;
+            case "2":
+                width = 16;
+                height = 16;
+                mineCount = 40;
+                break;
+            case "3":
+                width = 30;
+                height = 16;
+                mineCount = 99;
+                break;
+            default:
+                System.out.println("Invalid choice, defaulting to Easy.");
+                width = 8;
+                height = 8;
+                mineCount = 10;
+                break;
+        }
     }
 
     public void start() {
