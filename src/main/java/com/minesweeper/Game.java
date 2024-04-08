@@ -25,32 +25,35 @@ public class Game {
         board.displayBoard();
         // Prompt user for the first move
         System.out.println("Enter row and column for the first move (e.g., 2B):");
-        int[] firstMove = promptFirstMove();
-        // Place mines safely and calculate adjacent mines
+        int[] firstMove = promptForMove();
         board.placeMinesSafely(firstMove[0], firstMove[1]);
-        // Now, handle the first move specifically
+        revealCell(firstMove[0], firstMove[1]);
 
-        // Placeholder for the main game loop
+        // Main game loop
         while (!isGameOver) {
             board.displayBoard();
-            // Implement game loop logic here, including prompting for and handling further moves
-            System.out.println("Enter your next move (row column):");
-            int[] move = promptFirstMove(); // Reusing the method for simplicity; consider renaming it to something more general
-            handleMove(move[0], move[1]);
+            System.out.println("Enter row and column to reveal (e.g., 2B):");
+            int[] move = promptForMove();
+            revealCell(move[0], move[1]);
+
             // Check for win/lose conditions
         }
     }
 
-    private int[] promptFirstMove() {
+    private int[] promptForMove() {
         String input = scanner.nextLine().toUpperCase().trim();
-        // Assuming valid input format, convert Base 36 to row and column indexes
         int row = Integer.parseInt(String.valueOf(input.charAt(0)), 36);
         int col = Integer.parseInt(String.valueOf(input.charAt(1)), 36);
         return new int[]{row, col};
     }
 
-    private void handleMove(int row, int col) {
-        // Placeholder for handling the move logic
-        // This would include revealing the cell, checking if it's a mine, and updating game state
+    private void revealCell(int row, int col) {
+        // Check if the selected cell is a mine
+        if (board.getCell(row, col).isMine()) {
+            System.out.println("Game Over! You hit a mine.");
+            isGameOver = true;
+            // Optionally reveal all cells or just the mines here
+            return;
+        }
     }
 }

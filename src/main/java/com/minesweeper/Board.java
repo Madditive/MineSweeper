@@ -66,6 +66,33 @@ public class Board {
         return count;
     }
 
+    public void revealCell(int row, int col) {
+        // Method to reveal a cell at a specific location
+        Cell cell = cells[row][col];
+        if (cell.isRevealed() && !cell.isFlagged()) {
+            cell.setRevealed(true);
+            if (cell.isEmpty()) {
+                revealAdjacentCells(row, col);
+            }
+        }
+    }
+
+    private void revealAdjacentCells(int row, int col) {
+        // Helper method to recursively reveal adjacent cells
+        for (int i = Math.max(0, row - 1); i <= Math.min(row + 1, height - 1); i++) {
+            for (int j = Math.max(0, col - 1); j <= Math.min(col + 1, width - 1); j++) {
+                // Only reveal the cell if it hasn't already been revealed
+                if (!cells[i][j].isRevealed()) {
+                    revealCell(i, j); // This recursion will only continue for empty cells
+                }
+            }
+        }
+    }
+
+    public Cell getCell(int row, int col) {
+        return cells[row][col];
+    }
+
     public void displayBoard() {
         System.out.print("  "); // Initial spacing for row labels
         for (int j = 0; j < width; j++) {

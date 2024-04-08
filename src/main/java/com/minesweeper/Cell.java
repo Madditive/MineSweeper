@@ -48,6 +48,10 @@ public class Cell {
         this.adjacentMines = adjacentMines;
     }
 
+    public boolean isEmpty() {
+        return !this.isMine && this.adjacentMines == 0;
+    }
+
     // Method to display the cell's current state
     public String toString() {
         if (isRevealed) {
