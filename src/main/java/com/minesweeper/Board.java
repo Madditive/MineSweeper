@@ -1,5 +1,7 @@
 package com.minesweeper;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class Board {
@@ -29,33 +31,58 @@ public class Board {
         Random random = new Random();
         int placedMines = 0;
 
+        // First, mark the selected cell and its neighbors as safe zones
+        List<int[]> safeZones = new ArrayList<>();
+        safeZones.add(new int[]{firstRow, firstCol});
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                int safeRow = firstRow + i;
+                int safeCol = firstCol + j;
+                if (safeRow >= 0 && safeRow < height && safeCol >= 0 && safeCol < width) {
+                    safeZones.add(new int[]{safeRow, safeCol});
+                }
+            }
+        }
+
+        // Then, place mines ensuring they don't land in the safe zones
         while (placedMines < mineCount) {
             int row = random.nextInt(height);
             int col = random.nextInt(width);
 
-            // Ensure the first selected cell is not a mine and is not already a BombCell
-            if ((row == firstRow && col == firstCol) || cells[row][col].isMine()) {
-                continue;
+            boolean isSafeZone = safeZones.stream().anyMatch(zone -> zone[0] == row && zone[1] == col);
+            if (!isSafeZone && !cells[row][col].isMine()) {
+                cells[row][col] = CellFactory.createCell(true, 0);
+                placedMines++;
             }
-
-            // Replace the current cell with a BombCell
-            cells[row][col] = CellFactory.createCell(true, 0);
-            placedMines++;
-
-            // Update adjacent cells' mine counts
-            updateAdjacentCells(row, col);
         }
+
+        // After mines are placed, calculate the adjacent mines for all cells
+        calculateAdjacentMines();
     }
 
-    private void updateAdjacentCells(int bombRow, int bombCol) {
-        for (int row = Math.max(0, bombRow - 1); row <= Math.min(bombRow + 1, height - 1); row++) {
-            for (int col = Math.max(0, bombCol - 1); col <= Math.min(bombCol + 1, width - 1); col++) {
-                if (!(cells[row][col].isMine())) {
-                    int currentMines = cells[row][col] instanceof NotBombCell ? ((NotBombCell) cells[row][col]).getAdjacentMines() : 0;
-                    cells[row][col] = CellFactory.createCell(false, currentMines + 1);
+    private void calculateAdjacentMines() {
+        for (int row = 0; row < height; row++) {
+            for (int col = 0; col < width; col++) {
+                if (!cells[row][col].isMine()) {
+                    int mineCount = countAdjacentMines(row, col);
+                    cells[row][col] = CellFactory.createCell(false, mineCount);
                 }
             }
         }
+    }
+
+    private int countAdjacentMines(int row, int col) {
+        int count = 0;
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                int adjRow = row + i;
+                int adjCol = col + j;
+                if (adjRow >= 0 && adjRow < height && adjCol >= 0 && adjCol < width && cells[adjRow][adjCol].isMine()) {
+                    count++;
+                }
+            }
+        }
+        return count;
     }
 
     public void revealCell(int row, int col) {

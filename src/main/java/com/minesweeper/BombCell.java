@@ -23,9 +23,5 @@ public class BombCell extends Cell {
             return "#";
         }
     }
-
-
-
-
 }
 
