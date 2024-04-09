@@ -8,10 +8,11 @@ public class GameWinLoseConditionTest {
 
     private Game game;
     private Board board;
+    private TestInputProvider inputProvider;
 
     @BeforeEach
     void setUp() {
-        game = new Game("EASY"); // Assuming "EASY" is mapped to a small, manageable board for testing
+        game = new Game("EASY", inputProvider); // Assuming "EASY" is mapped to a small, manageable board for testing
         board = game.getBoard(); // Assuming you have a method to retrieve the board from the game
         // Further setup might be needed to configure the board for specific test scenarios
     }

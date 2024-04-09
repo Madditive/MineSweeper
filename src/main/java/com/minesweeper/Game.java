@@ -4,13 +4,14 @@ import java.util.Scanner;
 
 public class Game {
     private final Board board;
-    private final Scanner scanner = new Scanner(System.in);
+    private final InputProvider inputProvider;
     private boolean isGameOver = false;
     private int width;
     private int height;
     private int mineCount;
 
-    public Game(String difficulty) {
+    public Game(String difficulty, InputProvider inputProvider) {
+        this.inputProvider = inputProvider;
         switch (difficulty.toUpperCase()) {
             case "EASY":
                 width = 8;
@@ -42,7 +43,7 @@ public class Game {
         System.out.println("1: Easy (8x8 with 10 mines)");
         System.out.println("2: Intermediate (16x16 with 40 mines)");
         System.out.println("3: Expert (30x16 with 99 mines)");
-        String choice = scanner.nextLine().trim();
+        String choice = inputProvider.getNextInput().trim();
 
         switch (choice) {
             case "1":
@@ -101,7 +102,7 @@ public class Game {
     }
 
     private void handleUserMove(boolean isFirstMove) {
-        String input = scanner.nextLine().toUpperCase().trim();
+        String input = inputProvider.getNextInput().toUpperCase().trim();
 
         if (isFirstMove && input.length() != 2) {
             System.out.println("Invalid input. Please enter a valid row and column (e.g., 2B).");
