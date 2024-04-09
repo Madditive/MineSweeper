@@ -145,4 +145,36 @@ public class Board {
         }
         return revealedCells;
     }
+
+    public int getHeight() {
+        return this.height;
+    }
+
+    public int getWidth() {
+        return this.width;
+    }
+
+    public void setCell(int row, int col, Cell cell) {
+        cells[row][col] = cell;
+    }
+
+    public boolean checkWinCondition() {
+        for (Cell[] row : cells) {
+            for (Cell cell :row) {
+                if (!cell.isMine() && !cell.isRevealed()) {
+                    return false; // If there's a non-mine cell that isn't revealed,
+                }
+            }
+        }
+        return true; // All non-mine cells have been revealed.
+    }
+
+    public void clearBoard() {
+        for (int i = 0; i < height; i++) {
+            for (int j = 0; j < width; j++) {
+                cells[i][j] = new NotBombCell(0); // Reset all cells to not be mines
+            }
+        }
+    }
+
 }

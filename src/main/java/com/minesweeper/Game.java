@@ -10,8 +10,30 @@ public class Game {
     private int height;
     private int mineCount;
 
-    public Game() {
-        selectDifficulty();
+    public Game(String difficulty) {
+        switch (difficulty.toUpperCase()) {
+            case "EASY":
+                width = 8;
+                height = 8;
+                mineCount = 10;
+                break;
+            case "INTERMEDIATE":
+                width = 16;
+                height = 16;
+                mineCount = 40;
+                break;
+            case "EXPERT":
+                width = 30;
+                height = 16;
+                mineCount = 99;
+                break;
+            default:
+                // Default to Easy difficulty for any invalid input
+                width = 8;
+                height = 8;
+                mineCount = 10;
+                System.out.println("Invalid difficulty. Defaulting to Easy.");
+        }
         this.board = new Board(width, height, mineCount);
     }
 
@@ -136,5 +158,42 @@ public class Game {
         if (board.countRevealedCells() + mineCount == (width * height)) {
             isGameOver = true;
         }
+    }
+
+    public double getWidth() {
+        return  this.width;
+    }
+
+    public double getHeight() {
+        return  this.height;
+    }
+
+    public double getMineCount() {
+        return  this.mineCount;
+    }
+
+    public Board getBoard() {
+        return this.board;
+    }
+
+    public boolean checkWin() {
+        return board.checkWinCondition();
+    }
+
+    public void revealCell(int row, int col) {
+        board.revealCell(row, col);
+        if (board.getCell(row, col).isMine()) {
+            // Set the game over state here
+            this.isGameOver = true;
+        }
+    }
+
+    public boolean isGameOver() {
+        return this.isGameOver;
+    }
+
+    public boolean isWin() {
+        // Implement logic to determine if the game is won
+        return !isGameOver && board.checkWinCondition();
     }
 }
