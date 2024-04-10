@@ -9,5 +9,17 @@ public class ConsoleInputProvider implements InputProvider {
     public String getNextInput() {
         return scanner.nextLine();
     }
+
+    @Override
+    public int getNextInt() {
+        while (true) {
+            try {
+                return scanner.nextInt();
+            } catch (Exception e) {
+                System.out.println("Invalid input. Please enter a valid number.");
+                scanner.nextLine(); // Clear the buffer to avoid infinite loop
+            }
+        }
+    }
 }
 
